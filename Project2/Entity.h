@@ -4,6 +4,7 @@ class Entity
 {
 private:
     int health = 1;
+
     int damage = 1;
     int oxygen = 3;
 
@@ -18,10 +19,10 @@ public:
     void Attack(Entity target);
 
     void LoseOxygen(int amount);
-    void GainHealth(int amount);
+    void GainOxygen(int amount);
 
     virtual void Move() = 0;
-    void SetCoords(int x, int y);
+    void SetCoords(int newX, int newY);
 
     void DisplayName();
 };
