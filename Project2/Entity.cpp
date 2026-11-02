@@ -17,27 +17,6 @@ void Entity::GainHealth(int amount)
 	health += amount;
 }
 
-void Entity::Attack(Entity target)
-{
-	target.LoseHealth(damage);
-}
-
-void Entity::LoseOxygen(int amount)
-{
-	oxygen -= amount;
-
-	if (oxygen < 0)
-	{
-		oxygen = 0;
-		LoseHealth(1);
-	}
-}
-
-void Entity::GainOxygen(int amount)
-{
-	oxygen += amount;
-}
-
 void Entity::SetCoords(int newX, int newY)
 {
 	x = newX;
