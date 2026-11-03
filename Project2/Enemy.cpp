@@ -1,6 +1,8 @@
 #include "Enemy.h"
+#include "Entity.h"
 
 #include <iostream>
 
-#include "Entity.h"
-
+void Enemy::Move()
+{
+}
