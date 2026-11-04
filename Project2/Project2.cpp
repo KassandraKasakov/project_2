@@ -8,6 +8,8 @@
 #include <conio.h>
 #include <windows.h>
 
+#include "Enemy.h"
+
 
 
 
@@ -18,13 +20,12 @@ struct Map {
     int height;
 };
 
-struct Entity {
+struct Player {
     int x;
     int y;
-    char name;
+    char name = 'H';
     int health;
     int damage;
-    int oxygen = 3;
 };
 
 enum Tile_Type
@@ -65,20 +66,20 @@ int GetCell(int x, int y, int columnMax)
 }
 
 
-void MapReset(Entity& player, Entity ennemies[]) {
+void MapReset(Player& player, Entity* ennemies[]) {
     player.x = -2;
     player.y = -2;
     player.health = 1;
-    player.oxygen = 3;
 
-    for (int i = 0;i < 5;i++) {
-        ennemies[i].x = -10;
-        ennemies[i].y = -10;
-    }
+    ennemies[0]->SetCoords(-10, -10);
+    ennemies[1]->SetCoords(-1, -1);
+    ennemies[2]->SetCoords(-2, -2);
+    ennemies[1]->SetCoords(-3, -3);
+    ennemies[2]->SetCoords(-4, -4);
 }
 
 
-Map CreateMap(int currentMap, Entity& player, Entity ennemies[]) {
+Map CreateMap(int currentMap, Player& player, Entity* ennemies[]) {
 
     Map map;
 
@@ -139,8 +140,7 @@ Map CreateMap(int currentMap, Entity& player, Entity ennemies[]) {
             // Detects Ennemy
             else if (line[i] == 'X') {
                 map.data[n] = 0;
-                ennemies[currentEnnemy].x = i;
-                ennemies[currentEnnemy].y = currentLine;
+                ennemies[currentEnnemy]->SetCoords(i, currentLine);
                 currentEnnemy++;
             }
 
@@ -160,7 +160,7 @@ Map CreateMap(int currentMap, Entity& player, Entity ennemies[]) {
 }
 
 
-void ShowMap(Map map, Entity player, Entity ennemies[], int currentMap) {
+void ShowMap(Map map, Player player, Entity* ennemies[], int currentMap) {
 
     HANDLE  hConsole;
     hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -175,7 +175,7 @@ void ShowMap(Map map, Entity player, Entity ennemies[], int currentMap) {
             int whenEnnemy;
 
             for (int i = 0; i < 5; i++) {
-                if (x == ennemies[i].x and y == ennemies[i].y) {
+                if (x == ennemies[i]->GetX() and y == ennemies[i]->GetY()) {
                     // Display if not in tall grass
                     if (map.data[index] != Tall_Grass) {
                         isEnnemy = true;
@@ -187,7 +187,7 @@ void ShowMap(Map map, Entity player, Entity ennemies[], int currentMap) {
             // Display Ennemies
             if (isEnnemy) {
                 SetConsoleTextAttribute(hConsole, 4);
-                std::cout << ennemies[whenEnnemy].name << ' ';
+                ennemies[whenEnnemy]->DisplayName();
             }
 
             // Display Player (and if not in tall grass)
@@ -217,7 +217,6 @@ void ShowMap(Map map, Entity player, Entity ennemies[], int currentMap) {
     std::cout << "Level " << currentMap << " : " << map.name << std::endl; // Level Name
     std::cout << "Coords : " << player.x << ' ' << player.y << std::endl; // Player Coords
     std::cout << "Health : " << player.health << "/1" << std::endl; // Player Health
-    std::cout << "Oxygen : " << player.oxygen << "/3" << std::endl; // Player Oxygen
     std::cout << "Your turn : ";
 }
 
@@ -233,54 +232,28 @@ bool IsInMap(int x, int y, Map map) {
 }
 
 
-void Collision(Entity& player, Entity ennemies[]) {
+void Collision(Player& player, Entity* ennemies[]) {
     for (int i = 0; i < 5; i++) {
-        if (player.x == ennemies[i].x and player.y == ennemies[i].y) {
-            player.health -= ennemies[i].damage;
+        if (player.x == ennemies[i]->GetX() and player.y == ennemies[i]->GetY()) {
+            player.health -= 1;
         }
     }
 }
 
 
-void OnTile(Entity& player, Map map, bool& victory, int currentMap) {
+void OnTile(Player& player, Map map, bool& victory, int currentMap) {
     int PlayerCell = GetCell(player.x, player.y, map.height);
 
     switch (map.data[PlayerCell])
     {
-    case Ground:
-        player.oxygen = 3;
-        break;
-    case Water:
-        player.oxygen--;
-        // When no oxygen
-        if (player.oxygen == 0) {
-            player.health = 0;
-            player.x = -2;
-            player.y = -2;
-        }
-        break;
-    case Mountain:
-        player.oxygen = 3;
-        break;
-    case Lava:
-        player.oxygen = 3;
-        player.health--;
-        break;
-    case Tall_Grass:
-        player.oxygen = 3;
-        break;
-    case Quicksand:
-        player.oxygen = 3;
-        break;
     case Door:
-        player.oxygen = 3;
         victory = true;
         break;
     }
 }
 
 
-void UpdateEntities(Entity& player, Entity ennemies[], Map map, bool& victory, int currentMap) {
+void UpdateEntities(Player& player, Entity* ennemies[], Map map, bool& victory, int currentMap) {
 
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
@@ -369,7 +342,7 @@ void UpdateEntities(Entity& player, Entity ennemies[], Map map, bool& victory, i
         // Detects if there is another ennemy
         for (int k = 0; k < 5; k++) {
             if (k != i) {
-                if (ennemies[k].x == ennemies[i].x + xDir and ennemies[k].y == ennemies[i].y + yDir) {
+                if (ennemies[k]->GetX() == ennemies[i]->GetX() + xDir and ennemies[k]->GetY() == ennemies[i]->GetY() + yDir) {
                     isOtherEnnemy = true;
                 }
             }
@@ -379,8 +352,8 @@ void UpdateEntities(Entity& player, Entity ennemies[], Map map, bool& victory, i
         if (!isOtherEnnemy) {
             if (xDir != 0 && yDir != 0)
                 std::cout << "AIIIIIIIIIIIIIIIIIIIEEEEEEEEEE" << std::endl;
-            int newX = ennemies[i].x + xDir;
-            int newY = ennemies[i].y + yDir;
+            int newX = ennemies[i]->GetX() + xDir;
+            int newY = ennemies[i]->GetY() + yDir;
 
             if (IsInMap(newX, newY, map)) {
 
@@ -389,21 +362,19 @@ void UpdateEntities(Entity& player, Entity ennemies[], Map map, bool& victory, i
                 {
                     // If the tile is slow, 1 out of 2 chance of moving
                     slow = rand() % 2;
-                    int currentTileType = map.data[GetCell(ennemies[i].x, ennemies[i].y, map.height)];
+                    int currentTileType = map.data[GetCell(ennemies[i]->GetX(), ennemies[i]->GetY(), map.height)];
                     if (tiles[currentTileType].isSlow) {
                         switch (slow)
                         {
                         case 0:
-                            ennemies[i].x = newX;
-                            ennemies[i].y = newY;
+                            ennemies[i]->SetCoords(newX, newY);
                             break;
                         case 1:
                             break;
                         }
                     }
                     else {
-                        ennemies[i].x = newX;
-                        ennemies[i].y = newY;
+                        ennemies[i]->SetCoords(newX, newY);
                     }
                 }
             }
@@ -439,7 +410,7 @@ void StartingScreen() {
 }
 
 
-void GameOver(Entity player) {
+void GameOver(Player player) {
 
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
@@ -470,13 +441,7 @@ void GameOver(Entity player) {
 
     std::cout << std::endl;
     // Ending Explanation
-    if (player.oxygen == 0) {
-        std::cout << "You have drowned!" << std::endl;
-    }
-    else {
         std::cout << "You have died!" << std::endl;
-    }
-
 }
 
 
@@ -510,15 +475,14 @@ int main()
 
     int currentMap = 1;
 
-    Entity player = { -2, -2, 'H', 20 };
+    Player player = { -2, -2, 'H', 20 };
 
-    Entity ennemies[5] = {
-        {-10, -10, 'X', 1, 1},
-        {-10, -10, 'X', 1, 1},
-        {-10, -10, 'X', 1, 1},
-        {-10, -10, 'X', 1, 1},
-        {-10, -10, 'X', 1, 1}
-    };
+    Entity* ennemies[5];
+    ennemies[0] = new Enemy();
+    ennemies[1] = new Enemy();
+    ennemies[2] = new Enemy();
+    ennemies[3] = new Enemy();
+    ennemies[4] = new Enemy();
 
     StartingScreen();
 
