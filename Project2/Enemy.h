@@ -7,5 +7,7 @@ class Enemy : public Entity
 private:
 public:
 	virtual void Move() override;
+
+	Enemy();
 };
 

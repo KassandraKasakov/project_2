@@ -16,6 +16,10 @@ public:
     virtual void Move() = 0;
     void SetCoords(int newX, int newY);
 
+    int GetX();
+    int GetY();
+
     void DisplayName();
+    void SetName(char newName);
 };
 

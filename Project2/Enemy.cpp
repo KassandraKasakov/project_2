@@ -6,3 +6,8 @@
 void Enemy::Move()
 {
 }
+
+Enemy::Enemy()
+{
+	SetName('X');
+}

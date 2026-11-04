@@ -23,7 +23,22 @@ void Entity::SetCoords(int newX, int newY)
 	y = newY;
 }
 
+int Entity::GetX()
+{
+	return x;
+}
+
+int Entity::GetY()
+{
+	return y;
+}
+
 void Entity::DisplayName()
 {
 	std::cout << name << ' ';
+}
+
+void Entity::SetName(char newName)
+{
+	name = newName;
 }
