@@ -10,6 +10,6 @@ void Player::Move()
 
 Player::Player()
 {
-	SetName('X');
+	SetName('H');
 }
 
