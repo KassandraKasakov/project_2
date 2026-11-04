@@ -71,9 +71,11 @@ void MapReset(Player& player, Entity* ennemies[]) {
     player.y = -2;
     player.health = 1;
 
-    ennemies[0]->SetCoords(0, 0);
-    ennemies[1]->SetCoords(1, 1);
-    ennemies[2]->SetCoords(2, 2);
+    ennemies[0]->SetCoords(-10, -10);
+    ennemies[1]->SetCoords(-1, -1);
+    ennemies[2]->SetCoords(-2, -2);
+    ennemies[1]->SetCoords(-3, -3);
+    ennemies[2]->SetCoords(-4, -4);
 }
 
 
@@ -475,10 +477,12 @@ int main()
 
     Player player = { -2, -2, 'H', 20 };
 
-    Entity* ennemies[3];
+    Entity* ennemies[5];
     ennemies[0] = new Enemy();
     ennemies[1] = new Enemy();
     ennemies[2] = new Enemy();
+    ennemies[3] = new Enemy();
+    ennemies[4] = new Enemy();
 
     StartingScreen();
 
