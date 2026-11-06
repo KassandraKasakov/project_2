@@ -1,8 +1,13 @@
 #pragma once
 
 #include "Enemy.h"
+#include "Player.h"
+
+#include <iostream>
 
 class Map {
+
+public:
 
     //
     // Tile
@@ -43,7 +48,7 @@ class Map {
     //
     //
     //
-
+public:
     //Map CreateMap(int currentMap, Player& player, Entity* ennemies[])
     // On peut transformer la fonction create en constructeur de la classe
     // Sauf si vous voulez charger une nouvelle carte sans détruire l'objet
@@ -59,11 +64,19 @@ class Map {
     //void OnTile(Player& player, Map map, bool& victory, int currentMap) {
     // OnTile ne faisait que check si c'était la porte
     // function plus 
-    bool isDoor(int x, int y);
+    bool IsDoor(int x, int y);
+    bool IsTallGrass(int x, int y);
+
+    int GetWidth();
+    int GetHeight();
+    int* GetData();
+    std::string GetName();
+    int GetNumber();
 
 private:
     std::string name = "null";
-    int* data;
-    int width;
-    int height;
+    int number = 0;
+    int* data = nullptr;
+    int width = 0;
+    int height = 0;
 };

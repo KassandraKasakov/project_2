@@ -8,7 +8,6 @@
 
 Map::Map(int currentMap, Player& player, Entity* ennemies[])
 {
-
     std::string path = "maps/level_";
     path.append(std::to_string(currentMap));
     path.append(".txt");
@@ -38,6 +37,7 @@ Map::Map(int currentMap, Player& player, Entity* ennemies[])
     height = lineMax;
     width = columnMax;
     data = new int[height * width];
+    number = currentMap;
 
 
 
@@ -81,12 +81,26 @@ Map::Map(int currentMap, Player& player, Entity* ennemies[])
     level.close();
 }
 
+
 Map::Tile Map::GetTile(int x, int y)
 {
 	int cell_pos = y * height + x;
 	int cell_id = data[cell_pos];
 	Tile current_tile = tiles[cell_id];
 	return current_tile;
+}
+
+void Map::MapReset(Player& player, Entity* ennemies[])
+{
+    player.x = -2;
+    player.y = -2;
+    player.health = 1;
+
+    ennemies[0]->SetCoords(-10, -10);
+    ennemies[1]->SetCoords(-1, -1);
+    ennemies[2]->SetCoords(-2, -2);
+    ennemies[1]->SetCoords(-3, -3);
+    ennemies[2]->SetCoords(-4, -4);
 }
 
 bool Map::IsInMap(int x, int y)
@@ -100,7 +114,7 @@ bool Map::IsInMap(int x, int y)
     return true;
 }
 
-bool Map::isDoor(int x, int y)
+bool Map::IsDoor(int x, int y)
 {
     int cell_pos = y * height + x;
     int cell_id = data[cell_pos];
@@ -110,4 +124,42 @@ bool Map::isDoor(int x, int y)
         return true;
     }
     return false;
+}
+
+bool Map::IsTallGrass(int x, int y)
+{
+    int cell_pos = y * height + x;
+    int cell_id = data[cell_pos];
+
+    if (cell_id == Tall_Grass)
+    {
+        return true;
+    }
+    return false;
+}
+
+
+int Map::GetWidth()
+{
+    return width;
+}
+
+int Map::GetHeight()
+{
+    return height;
+}
+
+int* Map::GetData()
+{
+    return data;
+}
+
+std::string Map::GetName()
+{
+    return name;
+}
+
+int Map::GetNumber()
+{
+    return number;
 }
