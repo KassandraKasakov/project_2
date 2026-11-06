@@ -9,6 +9,8 @@
 #include <windows.h>
 
 #include "Enemy.h"
+#include "Player.h"
+#include "Map.h"
 
 
 
@@ -18,14 +20,6 @@ struct Map {
     int* data;
     int width;
     int height;
-};
-
-struct Player {
-    int x;
-    int y;
-    char name = 'H';
-    int health;
-    int damage;
 };
 
 enum Tile_Type
