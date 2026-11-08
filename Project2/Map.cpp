@@ -6,6 +6,7 @@
 #include <fstream>
 #include <string>
 
+// Parser
 Map::Map(int currentMap, Player& player, Entity* ennemies[])
 {
     std::string path = "maps/level_";
@@ -58,13 +59,12 @@ Map::Map(int currentMap, Player& player, Entity* ennemies[])
             // Detects Player
             if (line[i] == 'H') {
                 data[n] = 0;
-                player.x = i;
-                player.y = currentLine;
+                player.pos = { i,currentLine };
             }
             // Detects Ennemy
             else if (line[i] == 'X') {
                 data[n] = 0;
-                ennemies[currentEnnemy]->SetCoords(i, currentLine);
+                ennemies[currentEnnemy]->SetCoords({ i,currentLine });
                 currentEnnemy++;
             }
 
@@ -82,9 +82,9 @@ Map::Map(int currentMap, Player& player, Entity* ennemies[])
 }
 
 
-Map::Tile Map::GetTile(int x, int y)
+Map::Tile Map::GetTile(Vector2 pos)
 {
-	int cell_pos = y * height + x;
+	int cell_pos = pos.y * height + pos.x;
 	int cell_id = data[cell_pos];
 	Tile current_tile = tiles[cell_id];
 	return current_tile;
@@ -92,31 +92,30 @@ Map::Tile Map::GetTile(int x, int y)
 
 void Map::MapReset(Player& player, Entity* ennemies[])
 {
-    player.x = -2;
-    player.y = -2;
+    // This reset entities
+    player.pos = Vector2{ -2,-2 };
     player.health = 1;
 
-    ennemies[0]->SetCoords(-10, -10);
-    ennemies[1]->SetCoords(-1, -1);
-    ennemies[2]->SetCoords(-2, -2);
-    ennemies[1]->SetCoords(-3, -3);
-    ennemies[2]->SetCoords(-4, -4);
+    for (int i = 0;i < 5;++i)
+    {
+        ennemies[i]->SetCoords(Vector2{ -10 - i,-10 - i });
+    }
 }
 
-bool Map::IsInMap(int x, int y)
+bool Map::IsInMap(Vector2 pos)
 {
-    if (x < 0 or x > height - 1) {
+    if (pos.x < 0 or pos.x > height - 1) {
         return false;
     }
-    if (y < 0 or y > width - 1) {
+    if (pos.y < 0 or pos.y > width - 1) {
         return false;
     }
     return true;
 }
 
-bool Map::IsDoor(int x, int y)
+bool Map::IsDoor(Vector2 pos)
 {
-    int cell_pos = y * height + x;
+    int cell_pos = pos.y * height + pos.x;
     int cell_id = data[cell_pos];
 
     if (cell_id == Door)
@@ -126,9 +125,9 @@ bool Map::IsDoor(int x, int y)
     return false;
 }
 
-bool Map::IsTallGrass(int x, int y)
+bool Map::IsTallGrass(Vector2 pos)
 {
-    int cell_pos = y * height + x;
+    int cell_pos = pos.y * height + pos.x;
     int cell_id = data[cell_pos];
 
     if (cell_id == Tall_Grass)

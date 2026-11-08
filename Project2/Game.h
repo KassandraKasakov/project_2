@@ -11,7 +11,7 @@ private:
 	void ShowMap(Player player, Entity* ennemies[]);
 	void ShowStats(Player player);
 
-	void Init();
+	void Init(Player player, Entity* ennemies[]);
 	void GameLoop(Player player, Entity* ennemies[], bool victory, int currentMap);
 public:
 	void Run();

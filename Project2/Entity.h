@@ -1,12 +1,13 @@
 #pragma once
 
+#include "Utilities.h"
+
 class Entity
 {
 private:
     int health = 1;
 
-    int x;
-    int y;
+    Vector2 pos = Vector2{};
 
     char name;
 public:
@@ -14,10 +15,9 @@ public:
     void GainHealth(int amount);
 
     virtual void Move() = 0;
-    void SetCoords(int newX, int newY);
+    void SetCoords(Vector2 newPos);
 
-    int GetX();
-    int GetY();
+    Vector2 GetPos();
 
     void DisplayName();
     void SetName(char newName);

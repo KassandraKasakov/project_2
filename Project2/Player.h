@@ -1,9 +1,11 @@
 #pragma once
+
+#include "Entity.h"
+
 class Player
 {
 public:
-    int x;
-    int y;
+    Vector2 pos = Vector2{ -2,-2 };
     char name = 'H';
     int health;
     int damage;

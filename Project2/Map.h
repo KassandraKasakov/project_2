@@ -56,16 +56,16 @@ public:
 
     // Ancien GetCell mais on renvoi directement Tile comme tiles[7] est dans la classe
     // L'utilisateur finale ne peux donc plus récupérer simplement l'index dans le tableau
-    Tile GetTile(int x, int y); 
+    Tile GetTile(Vector2 pos); 
 
     void MapReset(Player& player, Entity* ennemies[]);
-    bool IsInMap(int x, int y);
+    bool IsInMap(Vector2 pos);
 
     //void OnTile(Player& player, Map map, bool& victory, int currentMap) {
     // OnTile ne faisait que check si c'était la porte
     // function plus 
-    bool IsDoor(int x, int y);
-    bool IsTallGrass(int x, int y);
+    bool IsDoor(Vector2 pos);
+    bool IsTallGrass(Vector2 pos);
 
     int GetWidth();
     int GetHeight();

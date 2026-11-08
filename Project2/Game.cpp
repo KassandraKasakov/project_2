@@ -9,7 +9,7 @@
 
 void Collision(Player& player, Entity* ennemies[]) {
     for (int i = 0; i < 5; i++) {
-        if (player.x == ennemies[i]->GetX() and player.y == ennemies[i]->GetY()) {
+        if (player.pos == ennemies[i]->GetPos()) {
             player.health -= 1;
         }
     }
@@ -21,8 +21,8 @@ void UpdateEntities(Player& player, Entity* ennemies[], Map map, bool& victory, 
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
     char imput = _getch();
-    int xDir = 0;
-    int yDir = 0;
+    Vector2 dir = { 0,0 };
+
     int slow;
 
 
@@ -31,45 +31,42 @@ void UpdateEntities(Player& player, Entity* ennemies[], Map map, bool& victory, 
     switch (imput)
     {
     case 'd':
-        xDir = 1;
+        dir.x = 1;
         break;
     case 'q':
-        xDir = -1;
+        dir.x = -1;
         break;
     case 'z':
-        yDir = -1;
+        dir.y = -1;
         break;
     case 's':
-        yDir = 1;
+        dir.y = 1;
         break;
     }
     imput = 'p';
 
-    int newX = player.x + xDir;
-    int newY = player.y + yDir;
+    Vector2 newPos = player.pos + dir;
 
-    if (map.IsInMap(newX, newY)) {
+    if (map.IsInMap(newPos)) {
 
-        Map::Tile tileType = map.GetTile(newX, newY);
+        Map::Tile tileType = map.GetTile(newPos);
         if (tileType.walkable)
         {
             // If the tile is slow, 1 out of 2 chance of moving
             slow = rand() % 2;
-            Map::Tile currentTileType = map.GetTile(player.x, player.y);
+            Map::Tile currentTileType = map.GetTile(player.pos);
             if (currentTileType.isSlow) {
                 switch (slow)
                 {
                 case 0:
-                    player.x = newX;
-                    player.y = newY;
+                    player.pos = newPos;
                     break;
                 case 1:
                     break;
                 }
             }
             else {
-                player.x = newX;
-                player.y = newY;
+                player.pos = newPos;
             }
         }
     }
@@ -80,8 +77,7 @@ void UpdateEntities(Player& player, Entity* ennemies[], Map map, bool& victory, 
 
     for (int i = 0;i < 5;i++) {
 
-        int xDir = 0;
-        int yDir = 0;
+        Vector2 dir = { 0,0 };
 
         // Random direction
         random = rand() % 4;
@@ -89,23 +85,23 @@ void UpdateEntities(Player& player, Entity* ennemies[], Map map, bool& victory, 
         switch (random)
         {
         case 0:
-            xDir = 1;
+            dir.x = 1;
             break;
         case 1:
-            xDir = -1;
+            dir.x = -1;
             break;
         case 2:
-            yDir = -1;
+            dir.y = -1;
             break;
         case 3:
-            yDir = 1;
+            dir.y = 1;
             break;
         }
 
         // Detects if there is another ennemy
         for (int k = 0; k < 5; k++) {
             if (k != i) {
-                if (ennemies[k]->GetX() == ennemies[i]->GetX() + xDir and ennemies[k]->GetY() == ennemies[i]->GetY() + yDir) {
+                if (ennemies[k]->GetPos() == ennemies[i]->GetPos() + dir) {
                     isOtherEnnemy = true;
                 }
             }
@@ -113,31 +109,30 @@ void UpdateEntities(Player& player, Entity* ennemies[], Map map, bool& victory, 
         isOtherEnnemy = false;
 
         if (!isOtherEnnemy) {
-            if (xDir != 0 && yDir != 0)
+            if (dir.x != 0 && dir.y != 0)
                 std::cout << "AIIIIIIIIIIIIIIIIIIIEEEEEEEEEE" << std::endl;
-            int newX = ennemies[i]->GetX() + xDir;
-            int newY = ennemies[i]->GetY() + yDir;
+            Vector2 newPos = ennemies[i]->GetPos() + dir;
 
-            if (map.IsInMap(newX, newY)) {
+            if (map.IsInMap(newPos)) {
 
-                Map::Tile tileType = map.GetTile(newX, newY);
+                Map::Tile tileType = map.GetTile(newPos);
                 if (tileType.walkable)
                 {
                     // If the tile is slow, 1 out of 2 chance of moving
                     slow = rand() % 2;
-                    Map::Tile currentTileType = map.GetTile(ennemies[i]->GetX(), ennemies[i]->GetY());
+                    Map::Tile currentTileType = map.GetTile(ennemies[i]->GetPos());
                     if (currentTileType.isSlow) {
                         switch (slow)
                         {
                         case 0:
-                            ennemies[i]->SetCoords(newX, newY);
+                            ennemies[i]->SetCoords(newPos);
                             break;
                         case 1:
                             break;
                         }
                     }
                     else {
-                        ennemies[i]->SetCoords(newX, newY);
+                        ennemies[i]->SetCoords(newPos);
                     }
                 }
             }
@@ -146,7 +141,7 @@ void UpdateEntities(Player& player, Entity* ennemies[], Map map, bool& victory, 
 
     Collision(player, ennemies);
 
-    if (map.IsDoor(player.x, player.y))
+    if (map.IsDoor(player.pos))
     {
         victory = true;
     }
@@ -233,17 +228,18 @@ void Game::ShowMap(Player player, Entity* ennemies[])
     for (int y = 0; y < m_currentMap->GetWidth(); ++y) {
         for (int x = 0; x < m_currentMap->GetHeight(); ++x) {
 
+            Vector2 tile = { x,y };
 
-            Map::Tile index = m_currentMap->GetTile(x, y);
+            Map::Tile index = m_currentMap->GetTile(tile);
 
             // Detects Ennemies
             bool isEnnemy = false;
             int whenEnnemy;
 
             for (int i = 0; i < 5; i++) {
-                if (x == ennemies[i]->GetX() and y == ennemies[i]->GetY()) {
+                if (tile == ennemies[i]->GetPos()) {
                     // Display if not in tall grass
-                    if (!m_currentMap->IsTallGrass(x, y)) {
+                    if (!m_currentMap->IsTallGrass(tile)) {
                         isEnnemy = true;
                         whenEnnemy = i;
                     }
@@ -257,8 +253,8 @@ void Game::ShowMap(Player player, Entity* ennemies[])
             }
 
             // Display Player (and if not in tall grass)
-            else if (x == player.x and y == player.y) {
-                if (!m_currentMap->IsTallGrass(x, y)) {
+            else if (tile == player.pos) {
+                if (!m_currentMap->IsTallGrass(tile)) {
                     SetConsoleTextAttribute(hConsole, 14);
                     std::cout << player.name << ' ';
                 }
@@ -286,17 +282,21 @@ void Game::ShowStats(Player player)
     SetConsoleTextAttribute(hConsole, 8);
     std::cout << std::endl;
     std::cout << "Level " << m_currentMap->GetNumber() << " : " << m_currentMap->GetName() << std::endl; // Level Name
-    std::cout << "Coords : " << player.x << ' ' << player.y << std::endl; // Player Coords
+    std::cout << "Coords : " << player.pos.x << ' ' << player.pos.y << std::endl; // Player Coords
     std::cout << "Health : " << player.health << "/1" << std::endl; // Player Health
     std::cout << "Your turn";
 }
 
 
-void Game::Init()
+void Game::Init(Player player, Entity* ennemies[])
 {
-    // There will be the start of the game before the game loop
-}
+    srand(time(0));
 
+    StartingScreen();
+
+    ShowMap(player, ennemies);
+    ShowStats(player);
+}
 
 void Game::GameLoop(Player player, Entity* ennemies[], bool victory, int currentMap)
 {
@@ -334,10 +334,10 @@ void Game::GameLoop(Player player, Entity* ennemies[], bool victory, int current
 
 void Game::Run()
 {
+    // Variable
     bool victory = false;
 
     Player player = { -2, -2, 'H', 20 };
-
     Entity* ennemies[5];
     ennemies[0] = new Enemy();
     ennemies[1] = new Enemy();
@@ -346,16 +346,11 @@ void Game::Run()
     ennemies[4] = new Enemy();
 
     int currentMapNumber = 1;
-
     Map map(currentMapNumber, player, ennemies);
     m_currentMap = &map;
 
-    StartingScreen();
-
-    ShowMap(player, ennemies);
-    ShowStats(player);
-
-
+    // Gameplay
+    Init(player, ennemies);
     GameLoop(player, ennemies, victory, currentMapNumber);
     if (winGame == true)
     {

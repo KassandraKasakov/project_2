@@ -17,20 +17,14 @@ void Entity::GainHealth(int amount)
 	health += amount;
 }
 
-void Entity::SetCoords(int newX, int newY)
+void Entity::SetCoords(Vector2 newPos)
 {
-	x = newX;
-	y = newY;
+	pos = newPos;
 }
 
-int Entity::GetX()
+Vector2 Entity::GetPos()
 {
-	return x;
-}
-
-int Entity::GetY()
-{
-	return y;
+	return pos;
 }
 
 void Entity::DisplayName()
