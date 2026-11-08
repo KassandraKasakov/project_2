@@ -1,5 +1,7 @@
 #pragma once
-#include "Map.h"
+
+#include "Player.h"
+#include "HeadlessZombie.h"
 
 class Game
 {

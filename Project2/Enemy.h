@@ -4,9 +4,10 @@
 
 class Enemy : public Entity
 {
-private:
+protected:
+	bool IsOtherEnemy(Vector2 pos, Entity* ennemies[], int currentEnemy);
 public:
-	virtual void Move() override;
+	virtual void Move(Entity* ennemies[], int currentEntity, Map map) override;
 
 	Enemy();
 };
