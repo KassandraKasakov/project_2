@@ -14,6 +14,11 @@ bool Enemy::IsOtherEnemy(Vector2 pos, Entity* ennemies[], int currentEnemy)
     return false;
 }
 
+void Enemy::Move(Entity* ennemies[], int currentEntity, Map map)
+{
+    return;
+}
+
 
 Enemy::Enemy()
 {

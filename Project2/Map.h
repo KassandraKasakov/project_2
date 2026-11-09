@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Utilities.h"
 
 #include <iostream>
 
@@ -50,13 +51,13 @@ public:
     //Map CreateMap(int currentMap, Player& player, Entity* ennemies[])
     // On peut transformer la fonction create en constructeur de la classe
     // Sauf si vous voulez charger une nouvelle carte sans détruire l'objet
-    Map(int currentMap, Player& player, Entity* ennemies[]);
+    Map(int currentMap);
 
     // Ancien GetCell mais on renvoi directement Tile comme tiles[7] est dans la classe
     // L'utilisateur finale ne peux donc plus récupérer simplement l'index dans le tableau
     Tile GetTile(Vector2 pos); 
 
-    void MapReset(Player& player, Entity* ennemies[]);
+    
     bool IsInMap(Vector2 pos);
 
     //void OnTile(Player& player, Map map, bool& victory, int currentMap) {

@@ -5,6 +5,7 @@
 #include <conio.h>
 #include <chrono>
 #include <thread>
+#include <fstream>
 
 
 void Collision(Player& player, Entity* ennemies[]) {
@@ -226,6 +227,56 @@ void Game::ShowStats(Player player)
 }
 
 
+void Game::MapReset(Player& player, Entity* ennemies[])
+{
+    // This reset entities
+    player.pos = Vector2{ -2,-2 };
+    player.health = 1;
+
+    for (int i = 0;i < 5;++i)
+    {
+        ennemies[i]->SetCoords(Vector2{ -10 - i,-10 - i });
+    }
+}
+
+void Game::EntityPlanning(int currentMap, Player& player, Entity* ennemies[])
+{
+    std::string path = "maps/level_";
+    path.append(std::to_string(currentMap));
+    path.append(".txt");
+
+    // Opening File
+    std::ifstream level(path);
+
+    std::string line;
+    int currentLine = 0;
+    int currentEnnemy = 0;
+    getline(level, line);
+
+    while (std::getline(level, line))
+    {
+        for (int i = 0;i < m_currentMap->GetHeight();i++)
+        {
+            // Detects Player
+            if (line[i] == 'H')
+            {
+                player.pos = { i,currentLine };
+            }
+            // Detects Ennemy
+            else if (line[i] == 'X')
+            {
+                ennemies[currentEnnemy]->SetCoords({ i,currentLine });
+                currentEnnemy++;
+            }
+        }
+        currentLine++;
+    }
+
+    // Closing File
+    level.close();
+}
+
+
 void Game::Init(Player player, Entity* ennemies[])
 {
     srand(time(0));
@@ -253,16 +304,18 @@ void Game::GameLoop(Player player, Entity* ennemies[], bool victory, int current
             victory = false;
 
             // New level
-            m_currentMap->MapReset(player, ennemies);
+            MapReset(player, ennemies);
 
             currentMap++;
-            Map nextMap(currentMap, player, ennemies);
+            Map nextMap(currentMap);
             if (nextMap.GetData() == nullptr)
             {
                 winGame = true;
                 return;
             }
             m_currentMap = &nextMap;
+            EntityPlanning(currentMap, player, ennemies);
+
             system("cls");
             ShowMap(player, ennemies);
             ShowStats(player);
@@ -284,8 +337,9 @@ void Game::Run()
     ennemies[4] = new HeadlessZombie();
 
     int currentMapNumber = 1;
-    Map map(currentMapNumber, player, ennemies);
+    Map map(currentMapNumber);
     m_currentMap = &map;
+    EntityPlanning(currentMapNumber, player, ennemies);
 
     // Gameplay
     Init(player, ennemies);

@@ -6,7 +6,7 @@
 #include <string>
 
 // Parser
-Map::Map(int currentMap, Player& player, Entity* ennemies[])
+Map::Map(int currentMap)
 {
     std::string path = "maps/level_";
     path.append(std::to_string(currentMap));
@@ -45,8 +45,6 @@ Map::Map(int currentMap, Player& player, Entity* ennemies[])
     int n = -1;
     level.clear();
     level.seekg(0);
-    int currentLine = 0;
-    int currentEnnemy = 0;
     getline(level, name);
 
     while (std::getline(level, line)) {
@@ -58,13 +56,10 @@ Map::Map(int currentMap, Player& player, Entity* ennemies[])
             // Detects Player
             if (line[i] == 'H') {
                 data[n] = 0;
-                player.pos = { i,currentLine };
             }
             // Detects Ennemy
             else if (line[i] == 'X') {
                 data[n] = 0;
-                ennemies[currentEnnemy]->SetCoords({ i,currentLine });
-                currentEnnemy++;
             }
 
             for (int t = 0; t < 7; t++) {
@@ -73,7 +68,6 @@ Map::Map(int currentMap, Player& player, Entity* ennemies[])
                 }
             }
         }
-        currentLine++;
     }
 
     // Closing File
@@ -87,18 +81,6 @@ Map::Tile Map::GetTile(Vector2 pos)
 	int cell_id = data[cell_pos];
 	Tile current_tile = tiles[cell_id];
 	return current_tile;
-}
-
-void Map::MapReset(Player& player, Entity* ennemies[])
-{
-    // This reset entities
-    player.pos = Vector2{ -2,-2 };
-    player.health = 1;
-
-    for (int i = 0;i < 5;++i)
-    {
-        ennemies[i]->SetCoords(Vector2{ -10 - i,-10 - i });
-    }
 }
 
 bool Map::IsInMap(Vector2 pos)
