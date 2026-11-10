@@ -8,16 +8,16 @@
 #include <fstream>
 
 
-void Collision(Player& player, Entity* ennemies[]) {
+void Collision(Entity* player[], Entity* ennemies[]) {
     for (int i = 0; i < 5; i++) {
-        if (player.pos == ennemies[i]->GetPos()) {
-            player.health -= 1;
+        if (player[0]->GetPos() == ennemies[i]->GetPos()) {
+            player[0]->LoseHealth(1);
         }
     }
 }
 
 
-void UpdateEntities(Player& player, Entity* ennemies[], Map map, bool& victory, int currentMap) {
+void UpdateEntities(Entity* player[], Entity* ennemies[], Map map, bool& victory, int currentMap) {
 
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
@@ -46,7 +46,7 @@ void UpdateEntities(Player& player, Entity* ennemies[], Map map, bool& victory, 
     }
     imput = 'p';
 
-    Vector2 newPos = player.pos + dir;
+    Vector2 newPos = player[0]->GetPos() + dir;
 
     if (map.IsInMap(newPos)) {
 
@@ -55,19 +55,19 @@ void UpdateEntities(Player& player, Entity* ennemies[], Map map, bool& victory, 
         {
             // If the tile is slow, 1 out of 2 chance of moving
             slow = rand() % 2;
-            Map::Tile currentTileType = map.GetTile(player.pos);
+            Map::Tile currentTileType = map.GetTile(player[0]->GetPos());
             if (currentTileType.isSlow) {
                 switch (slow)
                 {
                 case 0:
-                    player.pos = newPos;
+                    player[0]->SetCoords(newPos);
                     break;
                 case 1:
                     break;
                 }
             }
             else {
-                player.pos = newPos;
+                player[0]->SetCoords(newPos);
             }
         }
     }
@@ -80,7 +80,7 @@ void UpdateEntities(Player& player, Entity* ennemies[], Map map, bool& victory, 
 
     Collision(player, ennemies);
 
-    if (map.IsDoor(player.pos))
+    if (map.IsDoor(player[0]->GetPos()))
     {
         victory = true;
     }
@@ -110,7 +110,7 @@ void StartingScreen()
     system("cls");
 }
 
-void GameOver(Player player)
+void GameOver()
 {
     // Ending Animation
     for (int i = 1;i < 5;i++)
@@ -159,7 +159,7 @@ void Victory()
 }
 
 
-void Game::ShowMap(Player player, Entity* ennemies[])
+void Game::ShowMap(Entity* player[], Entity* ennemies[])
 {
     HANDLE  hConsole;
     hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -192,10 +192,10 @@ void Game::ShowMap(Player player, Entity* ennemies[])
             }
 
             // Display Player (and if not in tall grass)
-            else if (tile == player.pos) {
+            else if (tile == player[0]->GetPos()) {
                 if (!m_currentMap->IsTallGrass(tile)) {
                     SetConsoleTextAttribute(hConsole, 14);
-                    std::cout << player.name << ' ';
+                    player[0]->DisplayName();
                 }
                 else {
                     SetConsoleTextAttribute(hConsole, m_currentMap->tiles[m_currentMap->Tall_Grass].color);
@@ -213,7 +213,7 @@ void Game::ShowMap(Player player, Entity* ennemies[])
     }    
 }
 
-void Game::ShowStats(Player player)
+void Game::ShowStats(Entity* player[])
 {
     HANDLE  hConsole;
     hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -221,17 +221,17 @@ void Game::ShowStats(Player player)
     SetConsoleTextAttribute(hConsole, 8);
     std::cout << std::endl;
     std::cout << "Level " << m_currentMap->GetNumber() << " : " << m_currentMap->GetName() << std::endl; // Level Name
-    std::cout << "Coords : " << player.pos.x << ' ' << player.pos.y << std::endl; // Player Coords
-    std::cout << "Health : " << player.health << "/1" << std::endl; // Player Health
+    std::cout << "Coords : " << player[0]->GetPos().x << ' ' << player[0]->GetPos().y << std::endl; // Player Coords
+    std::cout << "Health : " << player[0]->GetHealth() << "/1" << std::endl; // Player Health
     std::cout << "Your turn";
 }
 
 
-void Game::MapReset(Player& player, Entity* ennemies[])
+void Game::MapReset(Entity* player[], Entity* ennemies[])
 {
     // This reset entities
-    player.pos = Vector2{ -2,-2 };
-    player.health = 1;
+    player[0]->SetCoords({-2,-2});
+    player[0]->GainHealth(19);
 
     for (int i = 0;i < 5;++i)
     {
@@ -239,7 +239,7 @@ void Game::MapReset(Player& player, Entity* ennemies[])
     }
 }
 
-void Game::EntityPlanning(int currentMap, Player& player, Entity* ennemies[])
+void Game::EntityPlanning(int currentMap, Entity* player[], Entity* ennemies[])
 {
     std::string path = "maps/level_";
     path.append(std::to_string(currentMap));
@@ -260,7 +260,7 @@ void Game::EntityPlanning(int currentMap, Player& player, Entity* ennemies[])
             // Detects Player
             if (line[i] == 'H')
             {
-                player.pos = { i,currentLine };
+                player[0]->SetCoords({ i,currentLine });
             }
             // Detects Ennemy
             else if (line[i] == 'X')
@@ -277,7 +277,7 @@ void Game::EntityPlanning(int currentMap, Player& player, Entity* ennemies[])
 }
 
 
-void Game::Init(Player player, Entity* ennemies[])
+void Game::Init(Entity* player[], Entity* ennemies[])
 {
     srand(time(0));
 
@@ -287,9 +287,9 @@ void Game::Init(Player player, Entity* ennemies[])
     ShowStats(player);
 }
 
-void Game::GameLoop(Player player, Entity* ennemies[], bool victory, int currentMap)
+void Game::GameLoop(Entity* player[], Entity* ennemies[], bool victory, int currentMap)
 {
-    while (player.health != 0)
+    while (player[0]->GetHealth() != 0)
     {
         UpdateEntities(player, ennemies, *m_currentMap, victory, currentMap);
 
@@ -328,7 +328,9 @@ void Game::Run()
     // Variable
     bool victory = false;
 
-    Player player = { -2, -2, 'H', 20 };
+    Entity* player[1];
+    player[0] = new Warrior();
+
     Entity* ennemies[5];
     ennemies[0] = new HeadlessZombie();
     ennemies[1] = new HeadlessZombie();
@@ -349,6 +351,6 @@ void Game::Run()
         Victory();
         return;
     }
-    GameOver(player);
+    GameOver();
 }
 

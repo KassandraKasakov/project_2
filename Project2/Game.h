@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Player.h"
+#include "Warrior.h"
 #include "HeadlessZombie.h"
 #include "Map.h"
 
@@ -11,14 +11,14 @@ public:
 	bool winGame = false;
 
 private:
-	void ShowMap(Player player, Entity* ennemies[]);
-	void ShowStats(Player player);
+	void ShowMap(Entity* player[], Entity* ennemies[]);
+	void ShowStats(Entity* player[]);
 
-	void MapReset(Player& player, Entity* ennemies[]);
-	void EntityPlanning(int currentMap, Player& player, Entity* ennemies[]);
+	void MapReset(Entity* player[], Entity* ennemies[]);
+	void EntityPlanning(int currentMap, Entity* player[], Entity* ennemies[]);
 
-	void Init(Player player, Entity* ennemies[]);
-	void GameLoop(Player player, Entity* ennemies[], bool victory, int currentMap);
+	void Init(Entity* player[], Entity* ennemies[]);
+	void GameLoop(Entity* player[], Entity* ennemies[], bool victory, int currentMap);
 public:
 	void Run();
 };

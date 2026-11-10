@@ -14,6 +14,7 @@ private:
 public:
     void LoseHealth(int amount);
     void GainHealth(int amount);
+    int GetHealth();
 
     virtual void Move(Entity* ennemies[], int currentEntity, Map map) = 0;
 

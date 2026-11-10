@@ -17,6 +17,11 @@ void Entity::GainHealth(int amount)
 	health += amount;
 }
 
+int Entity::GetHealth()
+{
+	return health;
+}
+
 
 void Entity::SetCoords(Vector2 newPos)
 {

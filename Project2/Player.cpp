@@ -28,7 +28,7 @@ void Player::Move(Entity* players[], int currentEntity, Map map)
     {
         return;
     }
-    SetPos(target);
+    SetCoords(target);
 }
 
 
@@ -52,4 +52,5 @@ Vector2 Player::GetDirection(char key) const
 Player::Player()
 {
     SetName('H');
+    GainHealth(19);
 }
