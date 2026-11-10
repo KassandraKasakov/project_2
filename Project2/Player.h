@@ -2,12 +2,15 @@
 
 #include "Entity.h"
 
-class Player
+class Player : public Entity
 {
+protected:
+    bool IsOtherPlayer(Vector2 pos, Entity* players[], int currentPlayer);
+    char ReadPlayerInputs();
+    Vector2 GetDirection(char key) const;
 public:
-    Vector2 pos = Vector2{ -2,-2 };
-    char name = 'H';
-    int health;
-    int damage;
+    virtual void Move(Entity* players[], int currentEntity, Map map) override;
+
+    Player();
 };
 

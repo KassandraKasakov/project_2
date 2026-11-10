@@ -5,6 +5,7 @@
 #include <conio.h>
 #include <chrono>
 #include <thread>
+#include <fstream>
 
 
 void Collision(Player& player, Entity* ennemies[]) {
@@ -72,71 +73,9 @@ void UpdateEntities(Player& player, Entity* ennemies[], Map map, bool& victory, 
     }
 
     // Ennemies Part
-    int random;
-    bool isOtherEnnemy = false;
-
-    for (int i = 0;i < 5;i++) {
-
-        Vector2 dir = { 0,0 };
-
-        // Random direction
-        random = rand() % 4;
-
-        switch (random)
-        {
-        case 0:
-            dir.x = 1;
-            break;
-        case 1:
-            dir.x = -1;
-            break;
-        case 2:
-            dir.y = -1;
-            break;
-        case 3:
-            dir.y = 1;
-            break;
-        }
-
-        // Detects if there is another ennemy
-        for (int k = 0; k < 5; k++) {
-            if (k != i) {
-                if (ennemies[k]->GetPos() == ennemies[i]->GetPos() + dir) {
-                    isOtherEnnemy = true;
-                }
-            }
-        }
-        isOtherEnnemy = false;
-
-        if (!isOtherEnnemy) {
-            if (dir.x != 0 && dir.y != 0)
-                std::cout << "AIIIIIIIIIIIIIIIIIIIEEEEEEEEEE" << std::endl;
-            Vector2 newPos = ennemies[i]->GetPos() + dir;
-
-            if (map.IsInMap(newPos)) {
-
-                Map::Tile tileType = map.GetTile(newPos);
-                if (tileType.walkable)
-                {
-                    // If the tile is slow, 1 out of 2 chance of moving
-                    slow = rand() % 2;
-                    Map::Tile currentTileType = map.GetTile(ennemies[i]->GetPos());
-                    if (currentTileType.isSlow) {
-                        switch (slow)
-                        {
-                        case 0:
-                            ennemies[i]->SetCoords(newPos);
-                            break;
-                        case 1:
-                            break;
-                        }
-                    }
-                    else {
-                        ennemies[i]->SetCoords(newPos);
-                    }
-                }
-            }
-        }
+    for (int i = 0;i < 5;i++)
+    {
+        ennemies[i]->Move(ennemies, i, map);
     }
 
     Collision(player, ennemies);
@@ -288,6 +227,56 @@ void Game::ShowStats(Player player)
 }
 
 
+void Game::MapReset(Player& player, Entity* ennemies[])
+{
+    // This reset entities
+    player.pos = Vector2{ -2,-2 };
+    player.health = 1;
+
+    for (int i = 0;i < 5;++i)
+    {
+        ennemies[i]->SetCoords(Vector2{ -10 - i,-10 - i });
+    }
+}
+
+void Game::EntityPlanning(int currentMap, Player& player, Entity* ennemies[])
+{
+    std::string path = "maps/level_";
+    path.append(std::to_string(currentMap));
+    path.append(".txt");
+
+    // Opening File
+    std::ifstream level(path);
+
+    std::string line;
+    int currentLine = 0;
+    int currentEnnemy = 0;
+    getline(level, line);
+
+    while (std::getline(level, line))
+    {
+        for (int i = 0;i < m_currentMap->GetHeight();i++)
+        {
+            // Detects Player
+            if (line[i] == 'H')
+            {
+                player.pos = { i,currentLine };
+            }
+            // Detects Ennemy
+            else if (line[i] == 'X')
+            {
+                ennemies[currentEnnemy]->SetCoords({ i,currentLine });
+                currentEnnemy++;
+            }
+        }
+        currentLine++;
+    }
+
+    // Closing File
+    level.close();
+}
+
+
 void Game::Init(Player player, Entity* ennemies[])
 {
     srand(time(0));
@@ -315,16 +304,18 @@ void Game::GameLoop(Player player, Entity* ennemies[], bool victory, int current
             victory = false;
 
             // New level
-            m_currentMap->MapReset(player, ennemies);
+            MapReset(player, ennemies);
 
             currentMap++;
-            Map nextMap(currentMap, player, ennemies);
+            Map nextMap(currentMap);
             if (nextMap.GetData() == nullptr)
             {
                 winGame = true;
                 return;
             }
             m_currentMap = &nextMap;
+            EntityPlanning(currentMap, player, ennemies);
+
             system("cls");
             ShowMap(player, ennemies);
             ShowStats(player);
@@ -339,15 +330,16 @@ void Game::Run()
 
     Player player = { -2, -2, 'H', 20 };
     Entity* ennemies[5];
-    ennemies[0] = new Enemy();
-    ennemies[1] = new Enemy();
-    ennemies[2] = new Enemy();
-    ennemies[3] = new Enemy();
-    ennemies[4] = new Enemy();
+    ennemies[0] = new HeadlessZombie();
+    ennemies[1] = new HeadlessZombie();
+    ennemies[2] = new HeadlessZombie();
+    ennemies[3] = new HeadlessZombie();
+    ennemies[4] = new HeadlessZombie();
 
     int currentMapNumber = 1;
-    Map map(currentMapNumber, player, ennemies);
+    Map map(currentMapNumber);
     m_currentMap = &map;
+    EntityPlanning(currentMapNumber, player, ennemies);
 
     // Gameplay
     Init(player, ennemies);
@@ -359,3 +351,4 @@ void Game::Run()
     }
     GameOver(player);
 }
+
