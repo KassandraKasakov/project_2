@@ -16,13 +16,27 @@ void Collision(Entity* player[], Entity* ennemies[]) {
     }
 }
 
+// Le joueur voit tout le monde : lui (case 0) puis les ennemis.
+void MovePlayer(Entity* player[], Entity* ennemies[], Map map)
+{
+    Entity* everyone[6];
+    everyone[0] = player[0];
+
+    for (int i = 0; i < 5; i++)
+    {
+        everyone[i + 1] = ennemies[i];
+    }
+
+    player[0]->Move(everyone, 0, map);
+}
+
 
 void UpdateEntities(Entity* player[], Entity* ennemies[], Map map, bool& victory, int currentMap) {
 
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
     // Ennemies Part
-    player[0]->Move(player, 0, map);
+    MovePlayer(player, ennemies, map);
 
 
     // Ennemies Part
@@ -184,7 +198,6 @@ void Game::MapReset(Entity* player[], Entity* ennemies[])
 {
     // This reset entities
     player[0]->SetCoords({-2,-2});
-    player[0]->GainHealth(19);
 
     for (int i = 0;i < 5;++i)
     {

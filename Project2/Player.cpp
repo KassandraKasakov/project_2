@@ -1,14 +1,18 @@
 #include "Player.h"
 
-#include <iostream>
+#include <conio.h>
 
 Entity* Player::GetEntityAt(Vector2 dir, Entity* players[], int currentPlayer)
 {
-    for (int k = 0; k < 5; k++) {
-        if (k != currentPlayer) {
-            if (players[k]->GetPos() == players[currentPlayer]->GetPos() + dir) {
+    Vector2 target = GetPos() + dir;
+
+    for (int k = 0; k < NB_ENTITIES; k++) {
+        if (k != currentPlayer && players[k] != nullptr
+            && players[k]->GetPos() == target)
+        {
+
                 return players[k];
-            }
+            
         }
     }
     return nullptr;
@@ -42,7 +46,7 @@ void Player::Walk(Vector2 dir, Entity* players[], int currentEntity, Map map)
 {
     Vector2 target = GetPos() + dir;
 
-    if (!map.IsInMap(target) || map.GetTile(target).walkable)
+    if (!map.IsInMap(target) || !map.GetTile(target).walkable)
     {
         return;
     }
@@ -56,8 +60,7 @@ void Player::Walk(Vector2 dir, Entity* players[], int currentEntity, Map map)
 
 void Player::Move(Entity* players[], int currentEntity, Map map)
 {
-    char key = '\0';
-    std::cin >> key;
+	char key = static_cast<char>(_getch());
 
     if (key == ' ')
     {

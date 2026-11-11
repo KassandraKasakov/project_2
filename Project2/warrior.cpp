@@ -10,4 +10,5 @@ Warrior::Warrior()
 void Warrior::OnCollision(Entity* other)
 {
 	other->LoseHealth(KILL_DAMAGE);
+	other->SetCoords({ -10, -10 });
 }

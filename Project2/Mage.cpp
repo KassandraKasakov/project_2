@@ -10,7 +10,7 @@ Mage::Mage()
 void Mage::UseAction(Entity* players[], int currentEntity)
 {
 	Vector2 myPos = GetPos();
-	for (int k = 0; k < 5; ++k)
+	for (int k = 0; k < NB_ENTITIES; ++k)
 	{
 		Vector2 pos = players[k]->GetPos();
 		if (k != currentEntity
