@@ -9,4 +9,3 @@ public:
 protected:
 	void OnCollision(Entity* other) override;
 };
-

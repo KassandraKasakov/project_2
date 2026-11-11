@@ -5,12 +5,15 @@
 class Player : public Entity
 {
 protected:
-    bool IsOtherPlayer(Vector2 pos, Entity* players[], int currentPlayer);
-    char ReadPlayerInputs();
+    Entity* GetEntityAt(Vector2 dir, Entity* players[], int currentPlayer);
     Vector2 GetDirection(char key) const;
+    void Walk(Vector2 dir, Entity* players[], int currentEntity, Map map);
+    virtual void UseAction(Entity* players[], int currentEntity);
+    virtual void OnCollision(Entity* other);
+
+
 public:
     virtual void Move(Entity* players[], int currentEntity, Map map) override;
 
     Player();
 };
-

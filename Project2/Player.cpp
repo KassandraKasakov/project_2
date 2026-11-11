@@ -2,36 +2,17 @@
 
 #include <iostream>
 
-bool Player::IsOtherPlayer(Vector2 pos, Entity* players[], int currentPlayer)
+Entity* Player::GetEntityAt(Vector2 dir, Entity* players[], int currentPlayer)
 {
     for (int k = 0; k < 5; k++) {
         if (k != currentPlayer) {
-            if (players[k]->GetPos() == players[currentPlayer]->GetPos() + pos) {
-                return true;
+            if (players[k]->GetPos() == players[currentPlayer]->GetPos() + dir) {
+                return players[k];
             }
         }
     }
-    return false;
+    return nullptr;
 }
-
-void Player::Move(Entity* players[], int currentEntity, Map map)
-{
-    char key = '\0';
-    std::cin >> key;
-
-    Vector2 dir = GetDirection(key);
-    Vector2 target = GetPos() + dir;
-
-    if (!map.IsInMap(target) || !map.GetTile(target).walkable
-        || IsOtherPlayer(dir, players, currentEntity))
-
-    {
-        return;
-    }
-    SetCoords(target);
-}
-
-
 Vector2 Player::GetDirection(char key) const
 {
     switch (key)
@@ -48,9 +29,47 @@ Vector2 Player::GetDirection(char key) const
         return { 0, 0 };
     }
 }
+//L'obstacle bloque simplement le joueur.
+void Player::OnCollision(Entity*)
+{
+}
+//l'espace ne fait rien.
+void Player::UseAction(Entity* [], int)
+{
+}
+
+void Player::Walk(Vector2 dir, Entity* players[], int currentEntity, Map map)
+{
+    Vector2 target = GetPos() + dir;
+
+    if (!map.IsInMap(target) || map.GetTile(target).walkable)
+    {
+        return;
+    }
+    Entity* other = GetEntityAt(dir, players, currentEntity);
+    if (other != nullptr) {
+        OnCollision(other);
+        return;
+    }
+    SetCoords(target);
+}
+
+void Player::Move(Entity* players[], int currentEntity, Map map)
+{
+    char key = '\0';
+    std::cin >> key;
+
+    if (key == ' ')
+    {
+        UseAction(players, currentEntity);
+        return;
+    }
+    Walk(GetDirection(key), players, currentEntity, map);
+}
+
+
 
 Player::Player()
 {
     SetName('H');
-    GainHealth(19);
 }

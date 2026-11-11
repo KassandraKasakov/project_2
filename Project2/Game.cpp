@@ -21,56 +21,9 @@ void UpdateEntities(Entity* player[], Entity* ennemies[], Map map, bool& victory
 
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-    char imput = _getch();
-    Vector2 dir = { 0,0 };
+    // Ennemies Part
+    player[0]->Move(player, 0, map);
 
-    int slow;
-
-
-
-    // Player Part
-    switch (imput)
-    {
-    case 'd':
-        dir.x = 1;
-        break;
-    case 'q':
-        dir.x = -1;
-        break;
-    case 'z':
-        dir.y = -1;
-        break;
-    case 's':
-        dir.y = 1;
-        break;
-    }
-    imput = 'p';
-
-    Vector2 newPos = player[0]->GetPos() + dir;
-
-    if (map.IsInMap(newPos)) {
-
-        Map::Tile tileType = map.GetTile(newPos);
-        if (tileType.walkable)
-        {
-            // If the tile is slow, 1 out of 2 chance of moving
-            slow = rand() % 2;
-            Map::Tile currentTileType = map.GetTile(player[0]->GetPos());
-            if (currentTileType.isSlow) {
-                switch (slow)
-                {
-                case 0:
-                    player[0]->SetCoords(newPos);
-                    break;
-                case 1:
-                    break;
-                }
-            }
-            else {
-                player[0]->SetCoords(newPos);
-            }
-        }
-    }
 
     // Ennemies Part
     for (int i = 0;i < 5;i++)

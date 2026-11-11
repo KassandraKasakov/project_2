@@ -1,4 +1,4 @@
-#include "Warrior.h"
+#include "warrior.h"
 
 constexpr int KILL_DAMAGE = 99;
 Warrior::Warrior()
