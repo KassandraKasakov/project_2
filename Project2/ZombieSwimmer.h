@@ -7,6 +7,6 @@ class ZombieSwimmer : public Zombie, public Swimmer
 {
 private:
 public:
-	void Move(Entity* ennemies[], int currentEntity, Map map) override;
+	void Move(Entity* ennemies[], int currentEntity, Map map, Entity* extraEntity[]) override;
 };
 

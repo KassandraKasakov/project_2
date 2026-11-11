@@ -27,7 +27,7 @@ void MovePlayer(Entity* player[], Entity* ennemies[], Map map)
         everyone[i + 1] = ennemies[i];
     }
 
-    player[0]->Move(everyone, 0, map);
+    player[0]->Move(everyone, 0, map, player);
 }
 
 
@@ -42,7 +42,7 @@ void UpdateEntities(Entity* player[], Entity* ennemies[], Map map, bool& victory
     // Ennemies Part
     for (int i = 0;i < 5;i++)
     {
-        ennemies[i]->Move(ennemies, i, map);
+        ennemies[i]->Move(ennemies, i, map, player);
     }
 
     Collision(player, ennemies);
@@ -298,7 +298,7 @@ void Game::Run()
     player[0] = new Warrior();
 
     Entity* ennemies[5];
-    ennemies[0] = new HeadlessZombie();
+    ennemies[0] = new Zombie();
     ennemies[1] = new HeadlessZombie();
     ennemies[2] = new HeadlessZombie();
     ennemies[3] = new HeadlessZombie();

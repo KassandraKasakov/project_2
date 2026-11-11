@@ -58,7 +58,7 @@ void Player::Walk(Vector2 dir, Entity* players[], int currentEntity, Map map)
     SetCoords(target);
 }
 
-void Player::Move(Entity* players[], int currentEntity, Map map)
+void Player::Move(Entity* players[], int currentEntity, Map map, Entity* extraEntity[])
 {
 	char key = static_cast<char>(_getch());
 

@@ -2,6 +2,7 @@
 
 #include "Warrior.h"
 #include "HeadlessZombie.h"
+#include "Zombie.h"
 #include "Map.h"
 
 class Game

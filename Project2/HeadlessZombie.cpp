@@ -24,7 +24,7 @@ Vector2 HeadlessZombie::GetRandomDir()
 	return randomDir;
 }
 
-void HeadlessZombie::Move(Entity* ennemies[], int currentEntity, Map map)
+void HeadlessZombie::Move(Entity* ennemies[], int currentEntity, Map map, Entity* extraEntity[])
 {
 	Vector2 newDir = GetRandomDir();
 	

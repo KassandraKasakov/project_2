@@ -14,7 +14,7 @@ protected:
 
 
 public:
-    virtual void Move(Entity* players[], int currentEntity, Map map) override;
+    virtual void Move(Entity* players[], int currentEntity, Map map, Entity* extraEntity[]) override;
 
     Player();
 };

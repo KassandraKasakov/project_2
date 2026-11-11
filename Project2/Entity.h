@@ -10,13 +10,13 @@ private:
 
     Vector2 pos = Vector2{};
 
-    char name;
+    char name = '@';
 public:
     void LoseHealth(int amount);
     void GainHealth(int amount);
     int GetHealth();
 
-    virtual void Move(Entity* ennemies[], int currentEntity, Map map) = 0;
+    virtual void Move(Entity* ennemies[], int currentEntity, Map map, Entity* extraEntity[]) = 0;
 
     void SetCoords(Vector2 newPos);
     // Set coords with 1 in 2 chance. Used when Entity is in Slow Tiles
